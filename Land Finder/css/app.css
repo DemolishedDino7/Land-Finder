@@ -1,0 +1,208 @@
+/* app.css — one stylesheet for the whole app.
+
+   Layout is a three-column grid: control panel, map, parcel detail. The detail column collapses
+   to 0 width when nothing is selected, which is what replaced the old map popup — the map keeps
+   its full width until you actually click a parcel, and the panel scrolls independently instead
+   of being clipped to a 340px bubble. */
+
+:root{
+  --green:#2e9e4f; --yellow:#e6b800; --red:#c0392b; --gray:#8a8f98; --blue:#2b7fc4;
+  --ink:#1b2029; --ink-2:#5c6773; --ink-3:#8a8f98;
+  --line:#e4e8ee; --line-2:#d5dbe4;
+  --bg:#f6f7f9; --card:#ffffff; --accent:#1d4ed8;
+  --panel-w:344px; --detail-w:420px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:13px/1.45 var(--font);color:var(--ink);background:var(--bg);overflow:hidden}
+button{font:inherit;color:inherit}
+
+#app{
+  display:grid; height:100vh;
+  grid-template-columns:var(--panel-w) 1fr 0;
+  transition:grid-template-columns .2s ease;
+}
+body.detail-open #app{ grid-template-columns:var(--panel-w) 1fr var(--detail-w); }
+
+/* ---------------- Control panel ---------------- */
+#panel{
+  display:flex; flex-direction:column; min-width:0;
+  background:var(--card); border-right:1px solid var(--line-2); z-index:500;
+}
+.p-head{padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+.p-head h1{margin:0 0 8px;font-size:15px;letter-spacing:-.01em}
+.regions{display:flex;gap:6px}
+.region-btn{
+  flex:1;padding:6px 8px;border:1px solid var(--line-2);background:#fff;border-radius:7px;
+  cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-2);
+}
+.region-btn:hover{border-color:var(--ink-3)}
+.region-btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.region-name{margin-top:6px;font-size:11px;color:var(--ink-3)}
+
+.tabs{display:flex;border-bottom:1px solid var(--line);background:#fbfcfd}
+.tab{
+  flex:1;padding:9px 4px;border:0;background:none;cursor:pointer;font-size:12px;font-weight:600;
+  color:var(--ink-3);border-bottom:2px solid transparent;white-space:nowrap;
+}
+.tab:hover{color:var(--ink-2)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.badge{
+  display:none;min-width:16px;padding:0 4px;margin-left:2px;border-radius:8px;
+  background:var(--accent);color:#fff;font-size:10px;line-height:16px;vertical-align:1px;
+}
+.panes{flex:1;overflow-y:auto;overscroll-behavior:contain}
+.pane{display:none;padding:10px}
+.pane.on{display:block}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 11px;margin-bottom:9px}
+.card h2{margin:0 0 7px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0}
+.row label{font-size:12px;color:var(--ink-2);flex:1;min-width:0}
+.row input[type=number]{
+  width:104px;flex:none;padding:4px 6px;border:1px solid var(--line-2);border-radius:6px;
+  font:inherit;text-align:right;background:#fff;
+}
+.row input[type=range]{width:120px;flex:none}
+.row.btns{gap:6px;margin-top:7px}
+.ck{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.btn{
+  flex:1;padding:6px 10px;border:1px solid var(--line-2);background:#fff;border-radius:7px;
+  cursor:pointer;font-size:12px;font-weight:600;
+}
+.btn:hover{border-color:var(--ink-3);background:#fbfcfd}
+.btn.wide{width:100%;margin-top:8px}
+.btn.ghost{width:100%;margin-top:10px;color:var(--red);border-color:#eccfcb}
+.legend .chip{display:flex;align-items:flex-start;gap:7px;margin:5px 0;font-size:11.5px;color:var(--ink-2)}
+.swatch{width:11px;height:11px;border-radius:3px;flex:none;margin-top:3px}
+.status{font-size:11.5px;color:var(--ink-2);line-height:1.6}
+.note{
+  margin-top:6px;padding:6px 8px;border-radius:6px;background:#f4f6f9;
+  font-size:11px;line-height:1.5;color:var(--ink-2);
+}
+.note.top{margin:0 0 10px}
+.note.blue{background:#eaf3fb;color:#1d5f96}
+.note.grn{background:#eaf5ec;color:#2c6b39}
+.note.est{background:#fbf4e6;color:#7a5c1f}
+.note.ind{background:#eef1fd;color:#1d4ed8}
+.note code{background:#e7ebf1;padding:0 3px;border-radius:3px}
+.dim{color:var(--ink-3)}
+.empty{padding:16px 12px;border:1px dashed var(--line-2);border-radius:9px;color:var(--ink-2);font-size:12px}
+.empty b{display:block;margin-bottom:5px;color:var(--ink)}
+.empty div{margin-top:5px;line-height:1.5}
+.est-tag{font-size:9.5px;font-weight:700;color:#7a5c1f;letter-spacing:.04em}
+
+/* ---------------- Map ---------------- */
+#mapwrap{position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#e9eaec}
+.spin{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:600;
+  padding:5px 12px;border-radius:20px;background:rgba(27,32,41,.86);color:#fff;
+  font-size:11.5px;display:none;
+}
+.spin.on{display:block}
+.spin .dot{width:9px;height:9px;border-radius:50%;background:#fff;animation:pulse 1s infinite ease-in-out}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+.flu-legend{
+  background:rgba(255,255,255,.95);padding:7px 9px;border-radius:7px;
+  box-shadow:0 1px 6px rgba(0,0,0,.18);font-size:10.5px;line-height:1.5;max-width:210px;
+}
+.flu-legend .flt{font-weight:700;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)}
+.flu-legend .flr{display:flex;align-items:center;gap:6px;margin:2px 0}
+.flu-legend .fls{width:11px;height:11px;border-radius:2px;flex:none}
+
+/* ---------------- Parcel detail sidebar ---------------- */
+#detail{
+  overflow-y:auto;overscroll-behavior:contain;background:var(--card);
+  border-left:1px solid var(--line-2);padding:0;min-width:0;
+}
+body:not(.detail-open) #detail{display:none}
+#detail > *{margin-left:14px;margin-right:14px}
+.sb-head{
+  position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;gap:8px;
+  margin:0!important;padding:12px 14px 10px;background:var(--card);border-bottom:1px solid var(--line);
+}
+.sb-head > div{flex:1;min-width:0}
+.sb-close{
+  border:1px solid var(--line-2);background:#fff;border-radius:6px;width:26px;height:26px;
+  cursor:pointer;color:var(--ink-2);flex:none;
+}
+.sb-close:hover{background:#f4f6f9}
+.pp-title{font-size:14px;font-weight:700;line-height:1.3}
+.pp-sub{font-size:11.5px;color:var(--ink-2);margin-top:2px}
+.pp-verdict{
+  display:inline-block;margin-top:11px;padding:4px 9px;border-radius:6px;
+  color:#fff;font-size:11px;font-weight:700;letter-spacing:.03em;
+}
+.sb-save{
+  display:block;width:calc(100% - 28px);margin-top:9px;padding:7px 10px;
+  border:1px solid var(--line-2);background:#fff;border-radius:7px;cursor:pointer;
+  font-size:12.5px;font-weight:600;color:var(--ink-2);
+}
+.sb-save:hover{border-color:var(--accent);color:var(--accent)}
+.sb-save.on{background:#fbf4e6;border-color:#e3c98d;color:#7a5c1f}
+.pp-fair{margin-top:11px;padding:10px 12px;border-radius:9px;background:#f2f7ff;border:1px solid #dbe6fb}
+.pp-fair-k{font-size:10.5px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.03em}
+.pp-fair .big{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:1px 0 2px}
+.pp-fair-sub{font-size:11px;color:var(--ink-2)}
+.pp-h{margin:14px 0 5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)}
+.pp-grid{
+  display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin-top:8px;font-size:12px;
+}
+.pp-grid > div:nth-child(odd){color:var(--ink-2)}
+.pp-grid > div:nth-child(even){text-align:right}
+.pp-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:4px}
+.pp-table th{text-align:left;padding:3px 5px;color:var(--ink-3);border-bottom:1px solid var(--line);font-weight:600}
+.pp-table td{padding:3px 5px;border-bottom:1px solid #f1f3f7;vertical-align:top}
+.pp-table .num,.pp-table th.num{text-align:right}
+.pp-table tr.is-best{background:#f2f7ff;font-weight:700}
+.pp-zero{font-size:10px;color:var(--red);font-weight:400}
+#detail .note:last-child{margin-bottom:16px}
+
+/* ---------------- Saved list ---------------- */
+.sv{border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-bottom:8px;background:var(--card)}
+.sv-top{display:flex;align-items:center;gap:7px}
+.sv-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.sv-addr{
+  flex:1;min-width:0;text-align:left;border:0;background:none;padding:0;cursor:pointer;
+  font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sv-addr:hover{color:var(--accent);text-decoration:underline}
+.sv-x,.sel-x{
+  border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:12px;padding:2px 4px;flex:none;
+}
+.sv-x:hover,.sel-x:hover{color:var(--red)}
+.sv-meta,.sel-meta{font-size:11px;color:var(--ink-3);margin-top:3px}
+.sv-nums{display:flex;justify-content:space-between;gap:8px;margin-top:5px;font-size:11.5px}
+.sv-note{
+  width:100%;margin-top:7px;padding:4px 7px;border:1px solid var(--line);border-radius:6px;
+  font:inherit;font-size:11.5px;background:#fbfcfd;
+}
+
+/* ---------------- Compare / assemblage ---------------- */
+.sel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;font-size:12.5px}
+.sel-head button{border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:11.5px}
+.sel-head button:hover{color:var(--red)}
+.sel-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.sel-table th{text-align:left;padding:3px 4px;color:var(--ink-3);border-bottom:1px solid var(--line);font-weight:600}
+.sel-table td{padding:4px;border-bottom:1px solid #f1f3f7;vertical-align:top}
+.sel-table .num,.sel-table th.num{text-align:right}
+.sel-table tfoot td{border-top:1px solid var(--line-2);border-bottom:0}
+.sel-addr{max-width:118px;overflow:hidden;text-overflow:ellipsis}
+.sel-dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+.sel-ask{width:74px;padding:2px 4px;border:1px solid var(--line-2);border-radius:5px;font:inherit;font-size:11px;text-align:right}
+.sel-sub{margin-top:11px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)}
+
+/* ---------------- Narrow screens: the detail panel goes full-bleed over the map ---------------- */
+@media (max-width:1180px){
+  :root{--panel-w:300px;--detail-w:360px}
+}
+@media (max-width:900px){
+  #app{grid-template-columns:1fr}
+  body.detail-open #app{grid-template-columns:1fr}
+  #panel{position:absolute;left:0;top:0;bottom:0;width:300px}
+  #detail{position:absolute;right:0;top:0;bottom:0;width:min(420px,100%);z-index:600;
+    box-shadow:-4px 0 18px rgba(0,0,0,.12)}
+  body:not(.detail-open) #detail{display:none}
+}

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Land Finder — Idaho &amp; Utah</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+<div id="app">
+
+  <aside id="panel">
+    <header class="p-head">
+      <h1>Land Finder</h1>
+      <div class="regions" role="group" aria-label="Region">
+        <button class="region-btn" data-region="id">Idaho</button>
+        <button class="region-btn" data-region="ut">Utah</button>
+      </div>
+      <div id="regionName" class="region-name"></div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab on" data-tab="deals" role="tab">Deals</button>
+      <button class="tab" data-tab="assumptions" role="tab">Assumptions</button>
+      <button class="tab" data-tab="saved" role="tab">Saved <span class="badge" id="savedCount"></span></button>
+      <button class="tab" data-tab="compare" role="tab">Compare <span class="badge" id="compareCount"></span></button>
+    </nav>
+
+    <div class="panes">
+
+      <section class="pane on" data-pane="deals">
+        <div class="card">
+          <h2>Deal legend</h2>
+          <div class="legend">
+            <div class="chip"><span class="swatch" style="background:var(--green)"></span> <b>Green</b> — positive NPV at market price (buy now)</div>
+            <div class="chip"><span class="swatch" style="background:var(--yellow)"></span> <b>Yellow</b> — positive NPV only after negotiating down</div>
+            <div class="chip"><span class="swatch" style="background:var(--red)"></span> <b>Red</b> — offer far below market — avoid</div>
+            <div class="chip"><span class="swatch" style="background:var(--gray)"></span> <b>Gray</b> — no development upside / protected</div>
+            <div class="chip"><span class="swatch" style="background:var(--blue)"></span> <b>Blue</b> — no assessed value on file (never scored)</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Layers</h2>
+          <label class="ck"><input type="checkbox" id="tParcels" checked> Scored parcels</label>
+          <label class="ck"><input type="checkbox" id="tFLU"> Future land use</label>
+          <label class="ck"><input type="checkbox" id="tUtil"> Utilities &amp; site constraints</label>
+          <label class="ck" id="estimateRow"><input type="checkbox" id="tEstimate" checked> Estimate value where none is published</label>
+        </div>
+
+        <div class="card">
+          <h2>Show only</h2>
+          <label class="ck"><input type="checkbox" id="fGreen" checked> Green</label>
+          <label class="ck"><input type="checkbox" id="fYellow" checked> Yellow</label>
+          <label class="ck"><input type="checkbox" id="fRed" checked> Red</label>
+          <label class="ck"><input type="checkbox" id="fGray" checked> Gray</label>
+          <label class="ck"><input type="checkbox" id="fBlue" checked> Blue</label>
+          <div class="row btns">
+            <button class="btn" id="fOnlyGreen">Only green</button>
+            <button class="btn" id="fAll">Show all</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Verdict thresholds</h2>
+          <div class="row"><label for="tGreen">Green at or above <output id="tGreenV">100</output>% of ask</label>
+            <input type="range" id="tGreen" min="60" max="150" value="100" step="1"></div>
+          <div class="row"><label for="tYellow">Yellow at or above <output id="tYellowV">85</output>% of ask</label>
+            <input type="range" id="tYellow" min="40" max="120" value="85" step="1"></div>
+          <button class="btn wide" id="reScore">Re-score parcels</button>
+          <div class="note">Max offer as a share of the asking / assessed price. Above the green line
+            the deal clears your hurdle at the asking price.</div>
+        </div>
+
+        <div class="card">
+          <h2>Status</h2>
+          <div id="status" class="status">Loading…</div>
+        </div>
+      </section>
+
+      <section class="pane" data-pane="assumptions">
+        <div class="note top">These are the numbers the engine runs on, and they are
+          <b>per region</b> — switching states loads that state's assumptions. Edits re-score the
+          map immediately.</div>
+        <div id="assumptions"></div>
+      </section>
+
+      <section class="pane" data-pane="saved">
+        <div id="savedList"></div>
+      </section>
+
+      <section class="pane" data-pane="compare">
+        <div id="compareList"></div>
+      </section>
+
+    </div>
+  </aside>
+
+  <main id="mapwrap">
+    <div id="map"></div>
+    <div id="spin" class="spin"><div class="dot"></div></div>
+  </main>
+
+  <aside id="detail" aria-live="polite"></aside>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script type="module" src="js/core/app.js"></script>
+</body>
+</html>
