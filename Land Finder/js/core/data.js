@@ -163,11 +163,20 @@ export function centroidOf(feature){ try{ return turf.centroid(feature).geometry
 export function normalizeFlu(features, region){
   return (features||[]).filter(f=>f.geometry).map(f=>{
     const cfg=f.__cfg||{}; const field=detectFluField(f.properties||{}, cfg);
-    f.luLabel = field ? f.properties[field] : null;
+    /* Layer-level label fixes:
+         label  fixed designation for single-category layers (one layer per land use)
+         codes  raw value -> readable designation (coded domains like "OS", typos, "RESIDENTIAL HIGH")
+         skip   raw values that carry no designation (e.g. a county plan's "CITY" placeholder),
+                dropped so they never shadow a city layer or read as low-density housing */
+    let lbl = cfg.label || (field ? f.properties[field] : null);
+    const key = lbl==null ? null : (""+lbl).trim();
+    if(cfg.skip && cfg.skip.includes(key)) return null;
+    if(cfg.codes && key!=null && cfg.codes[key]!=null) lbl = cfg.codes[key];
+    f.luLabel = lbl;
     f.luDen   = fluPlanDensity(f.properties||{}, cfg);   // plan's published max du/acre, if any
     f.luTier  = intensity(f.luLabel, region);
     return f;
-  });
+  }).filter(Boolean);
 }
 
 /* A PROTECTED polygon must beat any overlapping designation, including a hand-traced override.

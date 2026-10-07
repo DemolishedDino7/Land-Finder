@@ -37,10 +37,45 @@ export const idaho = {
     {name:"Dry Creek",    url:ORG+"/Dry_Creek_Ranch_Future_Land_Use/FeatureServer/0/query",  field:null},
     {name:"Kuna",         url:"https://services2.arcgis.com/zGDMrUABi5rG1bng/arcgis/rest/services/Open_House_Future_Land_Use_Map_Draft_WFL1/FeatureServer/1/query", field:"COMP_CODE"},
     {name:"Canyon County",url:CANYON+"/DSD/Future_Land_Use_2030_Adopted/MapServer/1/query", field:"FLU_ZONE_C"},
-    // Elmore County — Mountain Home city FLU + the county plan (limited extent near Glenns Ferry).
-    // Parcels there are token-secured without value, so these are overlays only for now.
+    // Elmore County — Mountain Home city FLU + the county plan. NOTE (Oct 2026): the county's
+    // Future_Land_Use layer is published with the wrong spatial reference -- its polygons project
+    // to northern Arizona, so it currently returns nothing in Idaho. Fix is on the county's side
+    // (or trace their PDF). Parcels there are token-secured without value, so overlays only.
     {name:"Mountain Home", url:"https://services.arcgis.com/zuVYcGbo1L9xuj72/arcgis/rest/services/FUTURE_LAND_USE_2021/FeatureServer/0/query", field:"layer"},
     {name:"Elmore County", url:"https://services.arcgis.com/91hXl6NfvLGEi8x5/arcgis/rest/services/Elmore_Planning_and_Zoning/FeatureServer/9/query", field:"Future"},
+    // ---- Beyond the Treasure Valley (added Oct 2026). Parcels don't load outside Ada / Canyon /
+    // Gem yet, so these show on the FLU overlay now and feed scoring once parcels are wired.
+    // Every one is bbox-gated (ext) so it only fires when its own area is in view.
+    {name:"Twin Falls",   url:"https://tfportal.tfid.org/arcgisserver/rest/services/Future_Land_Use_Public/MapServer/0/query", field:"Zone", ext:[-114.55,42.47,-114.37,42.64]},
+    {name:"Pocatello",    url:"https://services3.arcgis.com/My1Vo0yFlHe2fnKB/arcgis/rest/services/Future_LandUse/FeatureServer/9/query", field:"COMP_PLAN_TYPE", ext:[-112.64,42.78,-112.35,42.96],
+     codes:{C:"Commercial",MU:"Mixed Use",R:"Residential",E:"Employment",UC:"Urban Core (mixed use)",I:"Industrial",SD:"Special District (public / institutional)",OS:"Open Space"}},
+    {name:"Lewiston",     url:"https://services5.arcgis.com/R6cBwHlkwfCfBjSM/arcgis/rest/services/my_cdFutureLandUseDesignation_gdb_view/FeatureServer/0/query", field:"Designation", ext:[-117.07,46.34,-116.88,46.45]},
+    {name:"Jerome",       url:"https://services.arcgis.com/ivTxDS7DflQhZTzu/arcgis/rest/services/Future_Land_Use_2023/FeatureServer/0/query", field:"FutureLU2022", ext:[-114.57,42.63,-114.42,42.76],
+     codes:{"RESIDENTIAL HIGH":"High Density Residential","RESIDENTIAL MED":"Medium Density Residential","RESIDENTIAL LOW":"Low Density Residential","RESIDENTIAL RURAL":"Rural Residential","AG TRANSITION":"Agricultural (future growth area)"}},
+    {name:"Buhl",         url:"https://services3.arcgis.com/2lFfYsoBD697ZuE3/arcgis/rest/services/Buhl_Comprehensive_Plan_Land_Use/FeatureServer/0/query", field:"LandUse", ext:[-114.82,42.57,-114.70,42.63]},
+    {name:"Hailey",       url:"https://services9.arcgis.com/X6IADK3MAoq4CuNd/arcgis/rest/services/Hailey_Future_Land_Use/FeatureServer/0/query", field:"FutureLand", ext:[-114.36,43.46,-114.25,43.57],
+     codes:{"Sensitive":"Sensitive Lands (protected)","Growth Reserve":"Rural / growth reserve"}},
+    {name:"Ketchum",      url:"https://services1.arcgis.com/Du5HbCSCJ3Dxz51s/arcgis/rest/services/Future_Land_Use_Categories_2025/FeatureServer/0/query", field:"Future_LU", ext:[-114.42,43.65,-114.34,43.72]},
+    {name:"Sun Valley",   url:"https://services9.arcgis.com/EnV60CNPaeEPPS2P/arcgis/rest/services/Sun_Valley_Future_Land_Use_2015/FeatureServer/0/query", field:"FLU_Category", ext:[-114.37,43.31,-113.93,43.73]},
+    // Post Falls: GS-1 / GS2 / GS-3 / CCS codes are undocumented in the layer and read as
+    // low-density by default. The city is adopting a new 2045 plan -- recheck this layer then.
+    {name:"Post Falls",   url:"https://services1.arcgis.com/QjiQKkFtXufcXWpu/arcgis/rest/services/Future_Land_Use_PF/FeatureServer/5/query", field:"FUTURE_LAND_USE", ext:[-117.05,47.68,-116.84,47.78]},
+    {name:"Dover",        url:"https://services1.arcgis.com/QjiQKkFtXufcXWpu/arcgis/rest/services/CompPlanDesignation/FeatureServer/40/query", field:"CompPlan", ext:[-116.70,48.24,-116.57,48.31],
+     codes:{"Compact Suburban Single Family (4 units/acre)":"Single Family Residential (4 units/acre)",
+            "Small Lot Single-Family Traditional (6 units/acre)":"Medium Density Residential (6 units/acre)",
+            "Small-Scale Working Lands - 5 acres":"Rural / working lands (5 acres)"}},
+    {name:"Council",      url:"https://services8.arcgis.com/fhV7YmN3ZH8F4stQ/arcgis/rest/services/Council_FLUM_ACI/FeatureServer/0/query", field:"LandUse", ext:[-116.46,44.70,-116.41,44.77],
+     codes:{"Agricultural Transition":"Agricultural (future growth area)"}},
+    {name:"Lava Hot Springs", url:"https://services3.arcgis.com/unGRzvbK9SNTRUps/arcgis/rest/services/Future_Land_Use/FeatureServer/2/query", field:"FutureLU", ext:[-112.05,42.59,-111.98,42.64],
+     codes:{"1":"High Density Residential","2":"Commercial (resort / tourism)","3":"Park","4":"Residential/Office","5":"Commercial","6":"Low Density Residential","7":"Medium Density Residential"}},
+    {name:"Bonners Ferry (zoning)", url:"https://services5.arcgis.com/4CllgMSJJaeToEFP/arcgis/rest/services/Future_Land_Use_Online/FeatureServer/1/query", field:"Zoning", ext:[-116.35,48.66,-116.28,48.72]},
+    // County plans: AFTER the city layers so a city's own plan wins inside its limits.
+    {name:"Bannock County", url:"https://services6.arcgis.com/jEWFLsriO24ArCMH/arcgis/rest/services/Planning_and_Zoning/FeatureServer/18/query", field:"FLUP", ext:[-112.53,42.25,-111.87,43.00],
+     skip:["CITY"], codes:{AG:"Agricultural",RES:"Residential",RR:"Rural Residential",SR:"Suburban Residential",PUB:"Public",REC:"Recreation",COM:"Commercial",IND:"Industrial",ROW:"ROW"}},
+    {name:"Jefferson County", url:"https://services.arcgis.com/7iO9jzKTrQqVrA3p/arcgis/rest/services/Comprehensive_Plan_-_View/FeatureServer/0/query", field:"LandUse", ext:[-112.70,43.62,-111.62,44.06],
+     codes:{"01":"Residential","02":"Recreation","03":"Commercial","04":"Agricultural","05":"Industrial"}},
+    {name:"Caribou County", url:"https://services1.arcgis.com/qnw9CxcuDG55fwTB/arcgis/rest/services/Zoning_and_Land_Use_PUBLIC/FeatureServer/1/query", field:"ZoneClass", ext:[-112.15,42.41,-111.04,43.03],
+     skip:["CITY"], codes:{AG:"Agricultural",COM:"Commercial",IND:"Industrial",RES:"Residential"}},
     // COMPASS regional comp plans fill the city gaps in BOTH counties (Nampa, Caldwell, Middleton,
     // small towns). LAST, so it only fills where no finer layer already covers the parcel.
     {name:"COMPASS Regional", url:"https://swidrdc.org/arcgis/rest/services/COMPASSData/CommonFeatures/FeatureServer/13/query", field:"regionalgeneral"},
