@@ -28,14 +28,16 @@ export function bboxOf(map){
   const b = map.getBounds();
   return [b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].join(",");
 }
-const GEO = bbox => "&geometry="+esc(bbox)+"&geometryType=esriGeometryEnvelope&inSR=4326"+
-  "&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=geojson&resultRecordCount=2000";
+const GEO = (bbox, noPaging) => "&geometry="+esc(bbox)+"&geometryType=esriGeometryEnvelope&inSR=4326"+
+  "&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=geojson"+(noPaging?"":"&resultRecordCount=2000");
 
 /* One ArcGIS query -> GeoJSON features with geometry, [] on any failure. A layer that 404s or
    blocks CORS must never take the whole refresh down with it. */
-export function arcQuery(url, bbox, where, outFields){
+/* `opts.noPaging`: some older self-hosted servers (Rexburg/Madison County) reject any record-count
+   parameter with "Pagination is not supported", so those layers query without one. */
+export function arcQuery(url, bbox, where, outFields, opts){
   if(!url) return Promise.resolve([]);
-  const u = url+"?where="+esc(where||"1=1")+GEO(bbox)+"&outFields="+esc(outFields||"*");
+  const u = url+"?where="+esc(where||"1=1")+GEO(bbox, opts&&opts.noPaging)+"&outFields="+esc(outFields||"*");
   return fetch(u).then(r=>r.json()).then(j=>(j.features||[]).filter(f=>f.geometry)).catch(()=>[]);
 }
 
@@ -66,7 +68,7 @@ export async function fetchFLU(region, bbox, seq){
   const [w,s,e,n]=bbox.split(",").map(Number);
   const layers=(region.fluLayers||[]).filter(c=> !c.ext || (c.ext[0]<=e && c.ext[2]>=w && c.ext[1]<=n && c.ext[3]>=s));
   const arrs = await Promise.all(layers.map(cfg =>
-    arcQuery(cfg.url, bbox).then(fs=>{ fs.forEach(f=>{ f.__cfg=cfg; }); return fs; })));
+    arcQuery(cfg.url, bbox, null, null, cfg).then(fs=>{ fs.forEach(f=>{ f.__cfg=cfg; }); return fs; })));
   if(stale(seq)) return null;
   return arrs.flat();
 }

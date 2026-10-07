@@ -51,6 +51,10 @@ export function intensity(raw, region){
   // catch before the PARK / CAMPUS rules below.
   if(has("BUSINESS PARK","OFFICE PARK","RESEARCH PARK","TECH PARK","BUSINESS CAMPUS","CORPORATE CAMPUS"))
     return {t:5,label:"Business park / employment",du:0};
+  // Home and RV "parks" are housing / commercial uses, not parkland -- also before the PARK rule.
+  if(has("MOBILE HOME PARK","MANUFACTURED HOME PARK","MANUFACTURED HOUSING PARK","TRAILER PARK"))
+    return {t:1,label:"Low-density residential",du:DUV.low};
+  if(has("RV PARK","R.V. PARK","RECREATIONAL VEHICLE PARK")) return {t:5,label:"Commercial / office",du:0};
 
   // Protected: shared list + this region's additions.
   if(has(...PROTECTED_BASE) || eq(...PROTECTED_BASE_EQ)
@@ -96,10 +100,14 @@ export function intensity(raw, region){
   // Apartments/condos are HOUSING. Utah's assessor class is literally "Commercial - Apartment
   // & Condo", which hits the COMMERCIAL rule first unless caught here.
   if(has("APARTMENT","CONDO")) return {t:3,label:"High-density residential",du:DUV.high};
+  // Manufactured / mobile HOMES are housing -- catch before MANUFACT reads them as industrial.
+  if(has("MANUFACTURED HOM","MOBILE HOM","MANUFACTURED HOUSING")) return {t:1,label:"Low-density residential",du:DUV.low};
   if(has("INDUSTRIAL","WAREHOUSE","MANUFACT","I-L","I-1","M-1","M-2","M-3")) return {t:6,label:"Industrial / employment",du:0};
   if(has("COMMERCIAL","MERCIAL","RETAIL","OFFICE","BUSINESS","EMPLOYMENT","C-C","C-1","C-2","C-3","L-O","O-T","CENTER")) return {t:5,label:"Commercial / office",du:0};
   // Downtown / central business district / mixed -> mixed use
-  if(has("MIXED","MULTIPLE","DOWNTOWN","OLD TOWN","CBD","CENTRAL BUSINESS","ACTIVITY","TRANSIT","TN-","VILLAGE","MU-") || eq("MU")) return {t:4,label:"Mixed use",du:DUV.mixed};
+  // TRANSIT (transit-oriented) but NOT "TRANSITION" -- "Agricultural Transition" or "Planned Transition"
+  // are edge-of-town residential/ag designations, not mixed use.
+  if(has("MIXED","MULTIPLE","DOWNTOWN","OLD TOWN","CBD","CENTRAL BUSINESS","ACTIVITY","TN-","VILLAGE","MU-") || /\bTRANSIT(?!ION)/.test(tn) || eq("MU")) return {t:4,label:"Mixed use",du:DUV.mixed};
   // Residential -- MED-HIGH before HIGH before MEDIUM ("Med-High Density" contains "High Density")
   if(has("MED-HIGH","MED HIGH","MEDIUM-HIGH","MEDIUM HIGH","MHDR")) return {t:3,label:"Medium-high residential",du:DUV.mh};
   if(has("HIGH DENSITY","HIGH-DENSITY","MULTI","APARTMENT","HDR","MFR"," MF","-MF") || eq("MF")) return {t:3,label:"High-density residential",du:DUV.high};

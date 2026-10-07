@@ -68,10 +68,37 @@ export const idaho = {
      codes:{"Agricultural Transition":"Agricultural (future growth area)"}},
     {name:"Lava Hot Springs", url:"https://services3.arcgis.com/unGRzvbK9SNTRUps/arcgis/rest/services/Future_Land_Use/FeatureServer/2/query", field:"FutureLU", ext:[-112.05,42.59,-111.98,42.64],
      codes:{"1":"High Density Residential","2":"Commercial (resort / tourism)","3":"Park","4":"Residential/Office","5":"Commercial","6":"Low Density Residential","7":"Medium Density Residential"}},
-    {name:"Bonners Ferry (zoning)", url:"https://services5.arcgis.com/4CllgMSJJaeToEFP/arcgis/rest/services/Future_Land_Use_Online/FeatureServer/1/query", field:"Zoning", ext:[-116.35,48.66,-116.28,48.72]},
+    {name:"Bonners Ferry", url:"https://services5.arcgis.com/4CllgMSJJaeToEFP/arcgis/rest/services/Admin_Bounds/FeatureServer/3/query", field:"Zoning", ext:[-116.37,48.65,-116.26,48.72]},
+    // ---- Second pass (Oct 7, 2026): city GIS servers and name-matched ArcGIS Online layers.
+    {name:"Idaho Falls",  url:"https://cifgis.idahofalls.gov/arcgis/rest/services/UtilityDevelopment/MapServer/720/query", field:"Transect", ext:[-112.15,43.42,-111.97,43.58],
+     codes:{"Urban Core":"Urban Core (mixed use)","General Urban":"Medium Density Residential (general urban)","Mixed Use Centers and Corridors":"Mixed Use",
+            "Special Use":"Special Use (public / institutional)"}},
+    // Rexburg's server is joined to a description table and rejects paging parameters.
+    {name:"Rexburg",      url:"https://madison.rexburg.org/mrgis/rest/services/Data/CompPlan/MapServer/0/query", field:"DBO.T_COMPPLANDESCRIPTION.DESCRIPTION", noPaging:true, ext:[-111.85,43.78,-111.74,43.87],
+     codes:{"Intermediate Residential":"Medium Density Residential","High Residential":"High Density Residential","Low Residential":"Low Density Residential","Form Based":"Mixed Use (form based)"}},
+    {name:"Rathdrum",     url:"https://services.arcgis.com/aDVuwZJfhoSYo0Ie/arcgis/rest/services/Jan_PUB_3_WFL1_FBD/FeatureServer/40/query", field:"ZONING", ext:[-116.97,47.75,-116.84,47.84],
+     codes:{"Residential Rural Ag Transition":"Rural Residential (ag transition)"}},
+    {name:"Ririe",        url:"https://services8.arcgis.com/8rulC8tP1E1nOcyo/arcgis/rest/services/Ririe_PLUM_-_View/FeatureServer/0/query", field:"LandUse", ext:[-111.81,43.60,-111.74,43.65],
+     skip:["Historic Downtown Overlay"], codes:{"Planned Transition":"Low Density Residential (planned transition)","Mixed Residential Use":"Medium Density Residential"}},
+    // Chubbuck: the city's FLU as copied into ITD District 5's 2017 Yellowstone corridor study.
+    {name:"Chubbuck (2017 copy)", url:"https://services1.arcgis.com/Qqv4dYPC8Vv8e3c3/arcgis/rest/services/D5_YellowstoneCorridorRefresh2017/FeatureServer/26/query", field:"Future_Des", ext:[-112.53,42.90,-112.43,42.96],
+     codes:{"Low Density":"Low Density Residential","Medium Density":"Medium Density Residential","High Density":"High Density Residential"}},
+    {name:"McCall",       url:"https://mccallgis.mccall.id.us/mcgis/rest/services/Future_Land_Use_Plan/MapServer/1/query", field:"LANDUSEDEC", ext:[-116.17,44.86,-116.02,45.03],
+     codes:{"Large Residential 5-10+ Acres":"Rural Residential (5-10+ acres)"}},
+    {name:"Ponderay",     url:"https://services.arcgis.com/MyTLiOs93fmcFMug/arcgis/rest/services/LandUseProposed/FeatureServer/0/query", field:"LANDUSEDESC", ext:[-116.56,48.28,-116.52,48.34]},
+    // Teton County (Driggs / Victor / Tetonia) comp plan: one layer per character area, so each gets a fixed label.
+    ...[[19,"Industrial (research)"],[20,"Industrial (Driggs area of impact)"],[21,"Town Neighborhood (low density)"],[22,"Rural Agriculture"],
+        [23,"Foothills (rural)"],[24,"Rural Neighborhood"],[25,"Rural Agriculture / Rural Neighborhood"],[26,"Agriculture / Wetland (rural)"]]
+      .map(([id,label])=>({name:"Teton County: "+label, url:"https://services1.arcgis.com/as6biEYkl7PaUM4Y/arcgis/rest/services/COMP_PLAN/FeatureServer/"+id+"/query", label, ext:[-111.41,43.45,-110.95,43.96]})),
     // County plans: AFTER the city layers so a city's own plan wins inside its limits.
     {name:"Bannock County", url:"https://services6.arcgis.com/jEWFLsriO24ArCMH/arcgis/rest/services/Planning_and_Zoning/FeatureServer/18/query", field:"FLUP", ext:[-112.53,42.25,-111.87,43.00],
      skip:["CITY"], codes:{AG:"Agricultural",RES:"Residential",RR:"Rural Residential",SR:"Suburban Residential",PUB:"Public",REC:"Recreation",COM:"Commercial",IND:"Industrial",ROW:"ROW"}},
+    {name:"Bonneville County", url:"https://gis.bonnevillecountyidaho.gov/hosted/rest/services/Zoning/MapServer/2/query", field:"comp_plan", ext:[-112.53,43.01,-111.03,43.63],
+     skip:["","Impact Area"], codes:{"Suburban Mixed":"Suburban Residential","Rural Growth Center":"Rural Residential (growth area)","Urban Residential":"Medium Density Residential (urban)"}},
+    {name:"Madison County", url:"https://madison.rexburg.org/mrgis/rest/services/Data/CompPlan/MapServer/2/query", field:"DBO.T_COMPPLANDESCRIPTION.DESCRIPTION", noPaging:true, ext:[-111.99,43.62,-111.39,43.94],
+     skip:["Townsite Overlay","Ag / Rec Overlay","Sensitive Land Overlay","Hwy Mixed Use Overlay"], codes:{"Ag Land":"Agricultural","Rural Cluster":"Rural Residential (cluster)","State Land":"State Land (public)"}},
+    {name:"Payette County", url:"https://services6.arcgis.com/3LBwvT7tWlJIoXCb/arcgis/rest/services/Comprehensive_Plans/FeatureServer/3/query", field:"Description", ext:[-116.99,43.79,-116.44,44.16],
+     codes:{"AGRICULTURE MIXED":"Agricultural (general)"}},
     {name:"Jefferson County", url:"https://services.arcgis.com/7iO9jzKTrQqVrA3p/arcgis/rest/services/Comprehensive_Plan_-_View/FeatureServer/0/query", field:"LandUse", ext:[-112.70,43.62,-111.62,44.06],
      codes:{"01":"Residential","02":"Recreation","03":"Commercial","04":"Agricultural","05":"Industrial"}},
     {name:"Caribou County", url:"https://services1.arcgis.com/qnw9CxcuDG55fwTB/arcgis/rest/services/Zoning_and_Land_Use_PUBLIC/FeatureServer/1/query", field:"ZoneClass", ext:[-112.15,42.41,-111.04,43.03],

@@ -42,7 +42,21 @@ export const utah = {
     {name:"Hurricane (Washington Co. zoning)",   url:"https://agisprodvm.washco.utah.gov/arcgis/rest/services/Zoning/MapServer/5/query",  field:"GEN_ZONE", ext:[-113.37,37.08,-113.18,37.27]},
     {name:"Santa Clara (Washington Co. zoning)", url:"https://agisprodvm.washco.utah.gov/arcgis/rest/services/Zoning/MapServer/12/query", field:"GEN_ZONE", ext:[-113.70,37.10,-113.60,37.18]},
     {name:"Ivins (Washington Co. zoning)",       url:"https://agisprodvm.washco.utah.gov/arcgis/rest/services/Zoning/MapServer/6/query",  field:"GEN_ZONE", ext:[-113.73,37.13,-113.63,37.22]},
+    // Cache Valley city plans (Oct 7, 2026) sit ABOVE the Cache city-zoning stand-in so a city's own plan wins.
+    {name:"Smithfield (FLU)", url:"https://services1.arcgis.com/QjiQKkFtXufcXWpu/arcgis/rest/services/Smithfield_General_Plan/FeatureServer/9/query", field:"FLU_Class", ext:[-111.87,41.80,-111.78,41.87],
+     codes:{AG:"Agricultural",OS:"Open Space",LDR:"Low Density Residential",MLDR:"Low Density Residential",MDR:"Medium Density Residential",
+            MHD:"Medium-High Density Residential",CBD:"Central Business District",CC:"Commercial",C_P:"Commercial",GC:"General Commercial",LI:"Light Industrial",P:"Public"}},
+    // Hyde Park: the public-comment draft of the general plan map.
+    {name:"Hyde Park (FLU draft)", url:"https://services1.arcgis.com/nSnGtAgSmNZcvEzK/arcgis/rest/services/Hyde_Park_City___Future_Land_Use/FeatureServer/3/query", field:"zone_type", ext:[-111.85,41.77,-111.77,41.83],
+     codes:{"Planned Profesional":"Office (planned professional)","Senior Citizen Housing":"Medium Density Residential (senior housing)"}},
+    {name:"Wellsville (general plan)", url:"https://services.arcgis.com/QdlehUncXjEmQYtI/arcgis/rest/services/WVC_PLGP_LandUse_view/FeatureServer/0/query", field:"TITLE", ext:[-112.04,41.55,-111.88,41.69],
+     codes:{"RESIDENTIAL - CRITICAL AREA 2 ACRES":"Rural Residential (2 acres)","RESIDENTIAL - OPEN SPACE 1 ACRE":"Rural Residential (1 acre)",
+            "RESIDENTIAL - OPEN SPACE 1/2 ACRE":"Low Density Residential (1/2 acre)","RESIDENTIAL - TOWN CENTER 12,000 SF":"Low Density Residential (12,000 sf lots)"}},
     {name:"Logan / Cache Co. zoning",   url:"https://gis.cachecounty.gov/arcgis/rest/services/Planning/City_Zoning/MapServer/6/query",       field:"general_zone_type", ext:[-112.05,41.44,-111.68,42.03]},
+    // Cache County general plan FLU. After the city layers and city zoning: it paints city land as
+    // agriculture, so it should only govern where nothing finer answers.
+    {name:"Cache County (FLU)", url:"https://services2.arcgis.com/BGUZsqWI221fvl15/arcgis/rest/services/Future_Land_Use/FeatureServer/8/query", field:"FLU", ext:[-112.18,41.36,-111.40,42.01],
+     codes:{"Mountain/Foothill Rural Residential/Conservatio":"Rural Residential (mountain / foothill)"}},
     {name:"Vernal / Uintah Co. zoning", url:"https://apps.uintah.utah.gov/arcgis/rest/services/Uintah_County_Zoning/FeatureServer/0/query",  field:"ZONE",              ext:[-110.10,39.90,-109.30,40.92]},
     {name:"Price / Carbon Co. zoning",  url:"https://maps.carbon.utah.gov/arcgis/rest/services/CountyGeneralMap/Zoning/MapServer/6/query",   field:"ZONING",            ext:[-110.92,39.54,-110.68,39.70]},
     // Small towns whose general plans turned out to be published as hosted GIS rather than PDF-only.
@@ -65,6 +79,12 @@ export const utah = {
     {name:"Apple Valley (general plan)", url:"https://services3.arcgis.com/HsYreje1PqvSGxlC/arcgis/rest/services/Zoning_Viewer/FeatureServer/2/query", field:"Zoning", ext:[-113.23,37.02,-113.01,37.15],
      codes:{R1:"Low Density Residential (1/2-1 acre)",R2:"Rural Residential (1-5 acres)",R3:"Rural Residential (5+ acres)",A:"Agricultural",C:"Commercial",
             OS:"Open Space",INST:"Institutional",PD:"Planned Development",MH:"MH",CTP:"Cabin / Tiny Home",RVP:"RV Park (commercial)"}},
+    {name:"Elwood (land use)",  url:"https://services.arcgis.com/QdlehUncXjEmQYtI/arcgis/rest/services/ELW_PLPZ_Land_Use/FeatureServer/0/query", field:"Layer", ext:[-112.18,41.62,-112.08,41.72]},
+    {name:"Kanab (general plan)", url:"https://services8.arcgis.com/iwS8A4jjHFwTzWfa/arcgis/rest/services/Kanab_UDOTVisionStudy_background/FeatureServer/7/query", field:"Name", ext:[-112.58,36.99,-112.47,37.07]},
+    // San Juan County general plan: one layer per category, so each gets a fixed label. After the
+    // Monticello / Blanding zoning layers above, so those still govern inside their cities.
+    ...[[1,"Commercial"],[3,"Industrial"],[2,"Residential"],[0,"Rural Residential (transition area)"],[4,"Multiple Use"],[5,"Tribal Land (protected)"],[6,"Agricultural"]]
+      .map(([id,label])=>({name:"San Juan County: "+label, url:"https://services1.arcgis.com/nSnGtAgSmNZcvEzK/arcgis/rest/services/San_Juan_GP_Future_Land_Use/FeatureServer/"+id+"/query", label, ext:[-110.9,37.0,-109.0,38.5]})),
     {name:"Morgan County (FLU)", url:"https://services5.arcgis.com/9zdKz4c9IFXMrlCe/arcgis/rest/services/FutureLandUse/FeatureServer/0/query", field:"LANDUSEDESC", ext:[-111.88,40.78,-111.22,41.38],
      skip:["Morgan City"], codes:{"Ranch Residential 10":"Rural Residential (ranch, 10 ac)","Ranch Residential 5":"Rural Residential (ranch, 5 ac)",
             "Village Residential (3 DUA)":"Low Density Residential (3 du/ac)","Village Low Density Residential":"Low Density Residential"}},
