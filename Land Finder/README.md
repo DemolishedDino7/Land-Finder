@@ -14,12 +14,12 @@ collided on 61 global names.
 
 Requires an internet connection — all parcel and planning data is fetched live.
 
-## The basemap needs a key
+## The basemap
 
-CARTO retired keyless access to their basemap tiles, so without a key the map shows an
-"API KEY REQUIRED" watermark. A key is free (5M tiles/month, no account) from
-<https://carto.com/basemaps/apikey/>. Paste it into **one place**: `CARTO_KEY` at the top of
-`js/core/basemap.js`.
+CARTO retired keyless access to their basemap tiles (no key = an "API KEY REQUIRED" watermark),
+so by default the app uses Esri's keyless World Light Gray Canvas instead. If you'd rather use
+CARTO, get a free key (5M tiles/month) from <https://carto.com/basemaps/apikey/> and paste it into
+`CARTO_KEY` at the top of `js/core/basemap.js`. That's the only change needed.
 
 ## Layout
 
@@ -34,7 +34,7 @@ CARTO retired keyless access to their basemap tiles, so without a key the map sh
       map.js                Leaflet map, panes, layers, legends
       render.js             parcel colors + the detail markup (pure)
       ui.js                 assumptions panel, tabs, saved list, detail sidebar
-      basemap.js            tiles + the CARTO key
+      basemap.js            tiles (Esri default, optional CARTO key)
       app.js                orchestration, region switching, boot
     js/regions/
       index.js              the region registry

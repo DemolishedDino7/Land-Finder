@@ -16,7 +16,7 @@ export const idaho = {
   id:"id", name:"Idaho — Treasure Valley", short:"Idaho",
   center:[43.62,-116.42], zoom:11,           // frames Ada (E) + Canyon (W)
   minZoom:15, minZoomOverlay:12,
-  attribution:'&copy; OpenStreetMap, &copy; CARTO • Parcels: Ada &amp; Canyon County Assessors, IDWR',
+  attribution:'Parcels: Ada &amp; Canyon County Assessors, IDWR',
 
   /* Idaho protects land that Utah deliberately does not -- see the note at the top of
      core/classify.js before changing either list. */
@@ -59,7 +59,7 @@ export const idaho = {
   hillsideUrl:"https://services1.arcgis.com/WHM6qC35aMtyAAlN/arcgis/rest/services/Hillside/FeatureServer/123/query",
   slopeImg:null,          // Ada publishes a hillside polygon layer, so no elevation sampling needed
   ownLayers:[
-    {agency:"ACHD (Ada Co. Highway District)", url:"https://services1.arcgis.com/QjiQKkFtXufcXWpu/arcgis/rest/services/ACHD_ROW/FeatureServer/0/query"},
+    {agency:"ACHD (Ada Co. Highway District)", url:"https://services1.arcgis.com/QjiQKkFtXufcXWpu/arcgis/rest/services/ACHD_ROW/FeatureServer/2/query"},  // layer moved 0 -> 2 (Oct 2026)
   ],
   zoningJoin:{ url:CANYON+"/DSD/Current_Zoning/FeatureServer/0/query", field:"ZONE_DESC", county:"canyon" },
 

@@ -17,7 +17,7 @@ export const utah = {
   id:"ut", name:"Utah — statewide", short:"Utah",
   center:[40.66,-111.90], zoom:11,           // Salt Lake Valley (Wasatch Front)
   minZoom:15, minZoomOverlay:12,
-  attribution:'&copy; OpenStreetMap, &copy; CARTO • Parcels: UGRC LIR / Utah County Assessors',
+  attribution:'Parcels: UGRC LIR / Utah County Assessors',
 
   /* Utah adds nothing to the shared protected list, and deliberately leaves GREENBELT, PRESERV
      and RECREATION OUT of it -- they are ag/assessor terms here, not open space. See the note at

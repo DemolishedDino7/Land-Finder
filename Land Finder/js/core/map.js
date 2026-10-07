@@ -6,7 +6,7 @@
 
 import { TIER_COLOR, TIER_LABEL } from './classify.js';
 import { featStyle, fluStyle } from './render.js';
-import { basemapUrl, BASEMAP_OPTS } from './basemap.js';
+import { basemapUrl, labelsUrl, BASEMAP_OPTS, BASEMAP_ATTRIBUTION } from './basemap.js';
 
 export const handlers = { click:null, ctrlClick:null };
 
@@ -15,6 +15,9 @@ export const handlers = { click:null, ctrlClick:null };
    time. applyRegionToMap() moves it to the active region straight after. */
 export const map = L.map('map',{preferCanvas:true, zoomControl:true, center:[43.62,-116.42], zoom:11});
 let baseLayer = L.tileLayer(basemapUrl(), Object.assign({}, BASEMAP_OPTS, {attribution:''})).addTo(map);
+/* Labels sit in their own pane above the parcels so street names stay readable over colored lots. */
+map.createPane('labelPane'); map.getPane('labelPane').style.zIndex = 470; map.getPane('labelPane').style.pointerEvents = 'none';
+if(labelsUrl()) L.tileLayer(labelsUrl(), Object.assign({}, BASEMAP_OPTS, {attribution:'', pane:'labelPane'})).addTo(map);
 
 export const parcelLayer = L.geoJSON(null,{
   style:(f)=>featStyle(f),
@@ -135,6 +138,6 @@ export function applyRegionToMap(region){
   baseLayer.getContainer && baseLayer.setUrl(basemapUrl());
   map.attributionControl.setPrefix('');
   if(baseLayer._attribution) map.attributionControl.removeAttribution(baseLayer._attribution);
-  baseLayer._attribution = region.attribution;
-  map.attributionControl.addAttribution(region.attribution);
+  baseLayer._attribution = BASEMAP_ATTRIBUTION + ' • ' + region.attribution;
+  map.attributionControl.addAttribution(baseLayer._attribution);
 }
